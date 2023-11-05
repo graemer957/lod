@@ -1,3 +1,7 @@
+mod app_state;
+pub use app_state::{AppState, Mode};
+mod menu_item;
+
 use std::error::Error;
 use std::process::Command;
 

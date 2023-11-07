@@ -43,18 +43,17 @@ impl AppState {
     }
 
     pub fn toggle_mode(&mut self) {
-        match self.mode {
+        let mode = match self.mode {
             Mode::Laptop => {
                 self.mode = Mode::Desktop;
-
-                self.status_item.try_borrow_mut().unwrap().set_title("🖥️");
+                LAPTOP_CHAR
             }
             Mode::Desktop => {
                 self.mode = Mode::Laptop;
-
-                self.status_item.try_borrow_mut().unwrap().set_title("💻");
+                DESKTOP_CHAR
             }
         };
+        self.status_item.try_borrow_mut().unwrap().set_title(mode);
 
         self.configure_menu_items();
     }

@@ -1,5 +1,8 @@
+#[cfg(target_os = "macos")]
 mod app_state;
+#[cfg(target_os = "macos")]
 pub use app_state::{AppState, Mode};
+#[cfg(target_os = "macos")]
 mod menu_item;
 
 use std::error::Error;

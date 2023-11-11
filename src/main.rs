@@ -1,10 +1,13 @@
+#[cfg(target_os = "macos")]
 use lod::{AppState, Mode};
 use std::cell::RefCell;
 use std::error::Error;
 use std::rc::Rc;
 use std::sync::mpsc::channel;
+#[cfg(target_os = "macos")]
 use system_status_bar_macos::*;
 
+#[cfg(target_os = "macos")]
 fn main() -> Result<(), Box<dyn Error>> {
     let (_sender, receiver) = channel::<()>();
     let (event_loop, terminator) = sync_event_loop(receiver, |_| {});

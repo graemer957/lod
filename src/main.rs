@@ -32,3 +32,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     event_loop();
     Ok(())
 }
+
+#[cfg(target_os = "linux")]
+fn main() {}

@@ -6,12 +6,13 @@
 mod app_state;
 #[cfg(target_os = "macos")]
 pub use app_state::{AppState, Mode};
-mod command;
 #[cfg(target_os = "macos")]
 mod menu_item;
+pub mod program;
 
-use command::Command;
+use program::{Program, ProgramImpl};
 use std::error::Error;
+use std::process::Command;
 
 /// Make use of the `defaults` builtin macOS command line tool to get if the Dock is set to autohide
 ///
@@ -19,18 +20,20 @@ use std::error::Error;
 ///
 /// # Errors
 ///
-/// Could return a multitude of errors, say from `Command` or a string slice
+/// Could return a multitude of errors, say from `Program` or another reason as string slice
 ///
 /// # Panics
 ///
 /// If it finds an unexpected digit in the response from `defaults`
 pub fn dock_autohide() -> Result<bool, Box<dyn Error>> {
-    let result = Command::new("defaults", &["read", "com.apple.dock", "autohide"]).execute()?;
+    let mut defaults = Command::new("defaults");
+    defaults.args(["read", "com.apple.dock", "autohide"]);
+    let output = ProgramImpl::new(defaults, 0).execute()?;
 
-    if result.stdout().len() != 2 {
+    if output.stdout().len() != 2 {
         return Err("Got more chars from output than expected".into());
     }
-    let digit = result
+    let digit = output
         .stdout()
         .first()
         .ok_or("Could not get first byte of output")?;

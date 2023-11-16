@@ -8,5 +8,8 @@ rust-version = "1.74.0"
 
 [dependencies]
 
+[dev-dependencies]
+mockall = "0.11.4"
+
 [target.'cfg(target_os = "macos")'.dependencies]
 system_status_bar_macos = "0.1.3"

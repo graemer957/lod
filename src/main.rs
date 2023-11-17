@@ -1,3 +1,7 @@
+#![deny(clippy::all)]
+#![warn(clippy::pedantic)]
+#![warn(clippy::nursery)]
+
 #[cfg(target_os = "macos")]
 use lod::{AppState, Mode};
 use std::cell::RefCell;

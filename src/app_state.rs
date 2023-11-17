@@ -1,7 +1,7 @@
-use super::menu_item::MenuItemExt;
+use super::menu_item::Ext;
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
-use system_status_bar_macos::*;
+use system_status_bar_macos::{LoopTerminator, Menu, MenuItem, StatusItem};
 
 pub enum Mode {
     Laptop,
@@ -19,6 +19,7 @@ pub struct AppState {
 }
 
 impl AppState {
+    #[must_use]
     pub fn new(terminator: LoopTerminator, mode: Mode) -> Self {
         let terminator = Rc::new(terminator);
 
@@ -28,7 +29,7 @@ impl AppState {
         };
         let status_item = Rc::new(RefCell::new(StatusItem::new(title, Menu::new(vec![]))));
 
-        AppState {
+        Self {
             terminator,
             status_item,
             mode,
@@ -42,6 +43,9 @@ impl AppState {
         self.configure_menu_items();
     }
 
+    /// # Panics
+    ///
+    /// If unable to `borrow_mut` on self(!)
     pub fn toggle_mode(&mut self) {
         let mode = match self.mode {
             Mode::Laptop => {

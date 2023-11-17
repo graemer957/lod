@@ -10,7 +10,7 @@ pub struct Command<'a> {
 }
 
 impl<'a> Command<'a> {
-    pub fn new(program: &'a str, args: &'a [&'a str]) -> Self {
+    pub const fn new(program: &'a str, args: &'a [&'a str]) -> Self {
         Command { program, args }
     }
 
@@ -40,7 +40,7 @@ pub struct Output {
 }
 
 impl Output {
-    pub fn stdout(&self) -> &Vec<u8> {
+    pub const fn stdout(&self) -> &Vec<u8> {
         &self.stdout
     }
 }
@@ -59,11 +59,11 @@ pub enum Error {
 impl Display for Error {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            Error::NonZeroStatusCode(result) => {
+            Self::NonZeroStatusCode(result) => {
                 write!(f, "Non-zero status code: {}", result.status_code)
             }
-            Error::Io(error) => write!(f, "{error}"),
-            Error::BadStatusCode => write!(f, "Unable to get status code from `Command`"),
+            Self::Io(error) => write!(f, "{error}"),
+            Self::BadStatusCode => write!(f, "Unable to get status code from `Command`"),
         }
     }
 }
@@ -73,7 +73,7 @@ impl Display for Error {
 impl Debug for Error {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            Error::NonZeroStatusCode(result) => {
+            Self::NonZeroStatusCode(result) => {
                 let status_code = result.status_code;
                 let stdout = String::from_utf8(result.stdout.clone())
                     .unwrap_or_else(|error| format!("{error}"));
@@ -85,8 +85,8 @@ impl Debug for Error {
                     "Unexpected status code: {status_code} | stdout: {stdout:?} | stderr: {stderr:?}"
                 )
             }
-            Error::Io(error) => write!(f, "{error:?}"),
-            Error::BadStatusCode => write!(f, "Unable to get status code from `Command`"),
+            Self::Io(error) => write!(f, "{error:?}"),
+            Self::BadStatusCode => write!(f, "Unable to get status code from `Command`"),
         }
     }
 }
@@ -95,12 +95,12 @@ impl std::error::Error for Error {}
 
 impl From<Output> for Error {
     fn from(result: Output) -> Self {
-        Error::NonZeroStatusCode(result)
+        Self::NonZeroStatusCode(result)
     }
 }
 
 impl From<io::Error> for Error {
     fn from(error: io::Error) -> Self {
-        Error::Io(error)
+        Self::Io(error)
     }
 }

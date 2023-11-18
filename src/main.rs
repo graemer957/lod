@@ -8,13 +8,11 @@ use std::cell::RefCell;
 use std::error::Error;
 use std::rc::Rc;
 use std::sync::mpsc::channel;
-#[cfg(target_os = "macos")]
-use system_status_bar_macos::*;
 
 #[cfg(target_os = "macos")]
 fn main() -> Result<(), Box<dyn Error>> {
     let (_sender, receiver) = channel::<()>();
-    let (event_loop, terminator) = sync_event_loop(receiver, |_| {});
+    let (event_loop, terminator) = system_status_bar_macos::sync_event_loop(receiver, |()| {});
 
     // For me, when I hide my Dock I am in 'laptop' mode
     let mode = if lod::dock_autohide()? {

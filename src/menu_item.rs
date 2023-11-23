@@ -1,11 +1,12 @@
 use super::AppState;
 use std::cell::RefCell;
-use std::rc::{Rc, Weak};
-use system_status_bar_macos::{LoopTerminator, MenuItem};
+use std::process::exit;
+use std::rc::Weak;
+use system_status_bar_macos::MenuItem;
 
 pub trait Ext {
     fn toggle_mode(title: &str, app_state: Weak<RefCell<AppState>>) -> MenuItem;
-    fn quit_item(terminator: Rc<LoopTerminator>) -> MenuItem;
+    fn quit_item() -> MenuItem;
 }
 
 impl Ext for MenuItem {
@@ -26,11 +27,11 @@ impl Ext for MenuItem {
         )
     }
 
-    fn quit_item(terminator: Rc<LoopTerminator>) -> MenuItem {
+    fn quit_item() -> MenuItem {
         Self::new(
             "Quit",
             Some(Box::new(move || {
-                terminator.terminate();
+                exit(0);
             })),
             None,
         )

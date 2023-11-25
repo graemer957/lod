@@ -3,6 +3,7 @@ use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 use system_status_bar_macos::{Menu, MenuItem, StatusItem};
 
+#[derive(Debug)]
 pub enum Mode {
     Laptop,
     Desktop,
@@ -46,13 +47,14 @@ impl AppState {
         let mode = match self.mode {
             Mode::Laptop => {
                 self.mode = Mode::Desktop;
-                LAPTOP_CHAR
+                DESKTOP_CHAR
             }
             Mode::Desktop => {
                 self.mode = Mode::Laptop;
-                DESKTOP_CHAR
+                LAPTOP_CHAR
             }
         };
+        println!("Switching to {:#?} mode", self.mode);
         self.status_item.try_borrow_mut().unwrap().set_title(mode);
 
         self.configure_menu_items();

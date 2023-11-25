@@ -28,6 +28,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     } else {
         Mode::Desktop
     };
+    println!("Starting in {mode:#?} mode");
 
     // Weakly reference self, in order to use in the `MenuItem` callbacks
     // Bad idea? Most likely, but rolling with it for now™

@@ -14,8 +14,6 @@ impl Ext for MenuItem {
         Self::new(
             title,
             Some(Box::new(move || {
-                println!("toggling mode!");
-
                 app_state
                     .upgrade()
                     .unwrap()

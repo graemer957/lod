@@ -64,16 +64,14 @@ impl AppState {
 
     fn configure_menu_items(&self) {
         let cloned_self = self.weak_self.clone();
-        let menu_items = match self.mode {
-            Mode::Laptop => vec![
-                MenuItem::toggle_mode(DESKTOP_CHAR, cloned_self),
-                MenuItem::quit_item(self.terminator.clone()),
-            ],
-            Mode::Desktop => vec![
-                MenuItem::toggle_mode(LAPTOP_CHAR, cloned_self),
-                MenuItem::quit_item(self.terminator.clone()),
-            ],
-        };
+        let menu_items = vec![
+            match self.mode {
+                Mode::Laptop => MenuItem::toggle_mode(DESKTOP_CHAR, cloned_self),
+                Mode::Desktop => MenuItem::toggle_mode(LAPTOP_CHAR, cloned_self),
+            },
+            MenuItem::separator(),
+            MenuItem::quit_item(self.terminator.clone()),
+        ];
         self.status_item
             .try_borrow_mut()
             .unwrap()

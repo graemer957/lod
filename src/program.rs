@@ -285,7 +285,7 @@ mod test {
             Ok(std::process::Output {
                 status: std::process::ExitStatus::from_raw(0),
                 stdout: String::from("stdout: nothing useful!").into_bytes(),
-                stderr: String::from("does stderror help?").into_bytes(),
+                stderr: String::from("does stderr help?").into_bytes(),
             })
         });
 
@@ -293,7 +293,7 @@ mod test {
         assert_eq!(format!("{sut}"), "Unexpected status code: 0");
         assert_eq!(
             format!("{sut:?}"),
-            "Unexpected status code: 0 | stdout: \"stdout: nothing useful!\" | stderr: \"does stderror help?\""
+            "Unexpected status code: 0 | stdout: \"stdout: nothing useful!\" | stderr: \"does stderr help?\""
         );
     }
 }

@@ -25,10 +25,11 @@ impl AppState {
             Mode::Laptop => LAPTOP_CHAR,
             Mode::Desktop => DESKTOP_CHAR,
         };
-        let status_item = Rc::new(RefCell::new(StatusItem::new(title, Menu::new(vec![]))));
+        let mut status_item = StatusItem::new("A title", Menu::new(vec![]));
+        status_item.set_image_with_system_symbol_name("laptopcomputer", Some(""));
 
         Self {
-            status_item,
+            status_item: Rc::new(RefCell::new(status_item)),
             mode,
             weak_self: Weak::new(),
         }
@@ -64,8 +65,18 @@ impl AppState {
         let cloned_self = self.weak_self.clone();
         let menu_items = vec![
             match self.mode {
-                Mode::Laptop => MenuItem::toggle_mode(DESKTOP_CHAR, cloned_self),
-                Mode::Desktop => MenuItem::toggle_mode(LAPTOP_CHAR, cloned_self),
+                Mode::Laptop => MenuItem::toggle_mode(
+                    "Desktop Mode",
+                    "desktopcomputer",
+                    "Switch to Desktop mode",
+                    cloned_self,
+                ),
+                Mode::Desktop => MenuItem::toggle_mode(
+                    "Laptop Mode",
+                    "laptopcomputer",
+                    "Switch to Laptop mode",
+                    cloned_self,
+                ),
             },
             MenuItem::separator(),
             MenuItem::quit_item(),

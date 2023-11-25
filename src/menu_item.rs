@@ -5,13 +5,23 @@ use std::rc::Weak;
 use system_status_bar_macos::MenuItem;
 
 pub trait Ext {
-    fn toggle_mode(title: &str, app_state: Weak<RefCell<AppState>>) -> MenuItem;
+    fn toggle_mode(
+        title: impl AsRef<str>,
+        image: impl AsRef<str>,
+        accessibility_description: impl AsRef<str>,
+        app_state: Weak<RefCell<AppState>>,
+    ) -> MenuItem;
     fn quit_item() -> MenuItem;
 }
 
 impl Ext for MenuItem {
-    fn toggle_mode(title: &str, app_state: Weak<RefCell<AppState>>) -> MenuItem {
-        Self::new(
+    fn toggle_mode(
+        title: impl AsRef<str>,
+        image_named: impl AsRef<str>,
+        accessibility_description: impl AsRef<str>,
+        app_state: Weak<RefCell<AppState>>,
+    ) -> MenuItem {
+        let mut menu_item = Self::new(
             title,
             Some(Box::new(move || {
                 app_state
@@ -22,7 +32,10 @@ impl Ext for MenuItem {
                     .toggle_mode();
             })),
             None,
-        )
+        );
+        menu_item.set_image_with_system_symbol_name(image_named, Some(accessibility_description));
+
+        menu_item
     }
 
     fn quit_item() -> MenuItem {

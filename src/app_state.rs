@@ -16,22 +16,20 @@ pub struct AppState {
     status_item: Rc<RefCell<StatusItem>>,
     mode: Mode,
     weak_self: Weak<RefCell<Self>>,
+    caffinating: bool,
 }
 
 impl AppState {
     #[must_use]
     pub fn new(mode: Mode) -> Self {
-        let title = match mode {
-            Mode::Laptop => LAPTOP_CHAR,
-            Mode::Desktop => DESKTOP_CHAR,
-        };
-        let mut status_item = StatusItem::new("A title", Menu::new(vec![]));
+        let mut status_item = StatusItem::new("", Menu::new(vec![]));
         status_item.set_image_with_system_symbol_name("laptopcomputer", Some(""));
 
         Self {
             status_item: Rc::new(RefCell::new(status_item)),
             mode,
             weak_self: Weak::new(),
+            caffinating: false,
         }
     }
 
@@ -62,22 +60,17 @@ impl AppState {
     }
 
     fn configure_menu_items(&self) {
-        let cloned_self = self.weak_self.clone();
         let menu_items = vec![
-            match self.mode {
-                Mode::Laptop => MenuItem::toggle_mode(
-                    "Desktop Mode",
-                    "desktopcomputer",
-                    "Switch to Desktop mode",
-                    cloned_self,
-                ),
-                Mode::Desktop => MenuItem::toggle_mode(
-                    "Laptop Mode",
-                    "laptopcomputer",
-                    "Switch to Laptop mode",
-                    cloned_self,
-                ),
-            },
+            MenuItem::toggle_mode(
+                match self.mode {
+                    Mode::Laptop => "Desktop Mode",
+                    Mode::Desktop => "Laptop Mode",
+                },
+                self.mode.sf_symbol(),
+                self.mode.accessibility_description(),
+                self.weak_self.clone(),
+            ),
+            MenuItem::caffinate_item(self.caffinating, self.weak_self.clone()),
             MenuItem::separator(),
             MenuItem::quit_item(),
         ];
@@ -85,5 +78,17 @@ impl AppState {
             .try_borrow_mut()
             .unwrap()
             .set_menu(Menu::new(menu_items));
+    }
+
+    #[must_use]
+    pub const fn caffinating(&self) -> bool {
+        self.caffinating
+    }
+
+    pub fn toggle_caffeination(&mut self) {
+        self.caffinating = !self.caffinating;
+        println!("Switching caffeination to {}", self.caffinating);
+
+        self.configure_menu_items();
     }
 }

@@ -6,6 +6,8 @@
 mod app_state;
 #[cfg(target_os = "macos")]
 pub use app_state::{AppState, Mode};
+mod config;
+pub use config::Config;
 #[cfg(target_os = "macos")]
 mod menu_item;
 pub mod program;

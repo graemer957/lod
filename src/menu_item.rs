@@ -1,5 +1,5 @@
 use super::AppState;
-use std::{cell::RefCell, process::exit, rc::Weak};
+use std::{cell::RefCell, process, rc::Weak};
 use system_status_bar_macos::{MenuItem, MenuItemState};
 
 type AppStateRef = Weak<RefCell<AppState>>;
@@ -12,9 +12,9 @@ pub trait Ext {
         app_state: AppStateRef,
     ) -> MenuItem;
 
-    fn caffinate_item(caffinating: bool, app_state: AppStateRef) -> MenuItem;
+    fn caffeinate_item(caffeinating: bool, app_state: AppStateRef) -> MenuItem;
 
-    fn quit_item() -> MenuItem;
+    fn quit_item(app_state: AppStateRef) -> MenuItem;
 }
 
 impl Ext for MenuItem {
@@ -41,9 +41,9 @@ impl Ext for MenuItem {
         menu_item
     }
 
-    fn caffinate_item(caffinating: bool, app_state: AppStateRef) -> MenuItem {
-        let mut caffinate_item = Self::new(
-            "Caffinate",
+    fn caffeinate_item(caffeinating: bool, app_state: AppStateRef) -> MenuItem {
+        let mut caffeinate_item = Self::new(
+            "Caffeinate",
             Some(Box::new(move || {
                 app_state
                     .upgrade()
@@ -54,22 +54,28 @@ impl Ext for MenuItem {
             })),
             None,
         );
-        caffinate_item
+        caffeinate_item
             .set_image_with_system_symbol_name("mug.fill", Some("Toggle caffeination of your Mac"));
-        if caffinating {
-            caffinate_item.set_state(MenuItemState::On);
+        if caffeinating {
+            caffeinate_item.set_state(MenuItemState::On);
         } else {
-            caffinate_item.set_state(MenuItemState::Off);
+            caffeinate_item.set_state(MenuItemState::Off);
         }
 
-        caffinate_item
+        caffeinate_item
     }
 
-    fn quit_item() -> MenuItem {
+    fn quit_item(app_state: AppStateRef) -> MenuItem {
         Self::new(
             "Quit",
             Some(Box::new(move || {
-                exit(0);
+                app_state
+                    .upgrade()
+                    .unwrap()
+                    .borrow_mut()
+                    .delete_apple_scripts();
+
+                process::exit(0);
             })),
             None,
         )

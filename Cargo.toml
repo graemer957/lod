@@ -8,6 +8,8 @@ rust-version = "1.74.0"
 
 [dependencies]
 icrate = { version = "0.0.4", features = ["apple", "Foundation_all", "AppKit_all"] }
+tempfile = "3.8.1"
+toml = "0.8.8"
 
 [dev-dependencies]
 mockall = "0.11.4"

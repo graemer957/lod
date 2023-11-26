@@ -5,10 +5,8 @@
 #[cfg(target_os = "macos")]
 use icrate::AppKit::NSApplication;
 #[cfg(target_os = "macos")]
-use lod::{AppState, Mode};
-use std::cell::RefCell;
-use std::error::Error;
-use std::rc::Rc;
+use lod::{AppState, Config, Mode};
+use std::{cell::RefCell, error::Error, rc::Rc};
 
 struct Application;
 
@@ -22,6 +20,8 @@ impl Application {
 
 #[cfg(target_os = "macos")]
 fn main() -> Result<(), Box<dyn Error>> {
+    let config = Config::load()?;
+
     // For me, when I hide my Dock I am in 'laptop' mode
     let mode = if lod::dock_autohide()? {
         Mode::Laptop
@@ -32,7 +32,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Weakly reference self, in order to use in the `MenuItem` callbacks
     // Bad idea? Most likely, but rolling with it for now™
-    let app_state = Rc::new(RefCell::new(AppState::new(mode)));
+    let app_state = Rc::new(RefCell::new(AppState::new(config, mode)));
     app_state
         .try_borrow_mut()
         .unwrap()

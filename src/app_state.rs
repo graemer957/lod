@@ -1,5 +1,9 @@
-use super::menu_item::Ext;
-use std::{cell::RefCell, rc::Weak};
+use super::{
+    menu_item::Ext,
+    program::{Program, ProgramImpl},
+    Config,
+};
+use std::{cell::RefCell, process::Command, rc::Weak};
 use system_status_bar_macos::{Menu, MenuItem, StatusItem};
 
 #[derive(Debug)]
@@ -39,15 +43,16 @@ impl Mode {
 }
 
 pub struct AppState {
+    config: Config,
     status_item: StatusItem,
     mode: Mode,
     weak_self: Weak<RefCell<Self>>,
-    caffinating: bool,
+    caffeinating: bool,
 }
 
 impl AppState {
     #[must_use]
-    pub fn new(mode: Mode) -> Self {
+    pub fn new(config: Config, mode: Mode) -> Self {
         let mut status_item = StatusItem::new("", Menu::new(vec![]));
         status_item.set_image_with_system_symbol_name(
             mode.sf_symbol(),
@@ -55,10 +60,11 @@ impl AppState {
         );
 
         Self {
+            config,
             status_item,
             mode,
             weak_self: Weak::new(),
-            caffinating: false,
+            caffeinating: false,
         }
     }
 
@@ -80,6 +86,7 @@ impl AppState {
         );
         self.mode = new_mode;
 
+        self.run_apple_script();
         self.configure_menu_items();
     }
 
@@ -92,22 +99,38 @@ impl AppState {
                 opposite_mode.accessibility_description(),
                 self.weak_self.clone(),
             ),
-            MenuItem::caffinate_item(self.caffinating, self.weak_self.clone()),
+            MenuItem::caffeinate_item(self.caffeinating, self.weak_self.clone()),
             MenuItem::separator(),
-            MenuItem::quit_item(),
+            MenuItem::quit_item(self.weak_self.clone()),
         ];
         self.status_item.set_menu(Menu::new(menu_items));
     }
 
     #[must_use]
-    pub const fn caffinating(&self) -> bool {
-        self.caffinating
+    pub const fn caffeinating(&self) -> bool {
+        self.caffeinating
     }
 
     pub fn toggle_caffeination(&mut self) {
-        self.caffinating = !self.caffinating;
-        println!("Switching caffeination to {}", self.caffinating);
+        self.caffeinating = !self.caffeinating;
+        println!("Switching caffeination to {}", self.caffeinating);
 
         self.configure_menu_items();
+    }
+
+    pub fn delete_apple_scripts(&mut self) {
+        self.config.delete_apple_scripts();
+    }
+
+    fn run_apple_script(&self) {
+        let mut defaults = Command::new("osascript");
+        defaults.args(match self.mode {
+            Mode::Laptop => self.config.laptop_applescript_path(),
+            Mode::Desktop => self.config.desktop_applescript_path(),
+        });
+
+        if let Err(error) = ProgramImpl::new(defaults, 0).execute() {
+            eprintln!("{error}");
+        }
     }
 }

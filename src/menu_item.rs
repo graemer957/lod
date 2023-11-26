@@ -2,15 +2,17 @@ use super::AppState;
 use std::{cell::RefCell, process::exit, rc::Weak};
 use system_status_bar_macos::{MenuItem, MenuItemState};
 
+type AppStateRef = Weak<RefCell<AppState>>;
+
 pub trait Ext {
     fn toggle_mode(
         title: impl AsRef<str>,
         image: impl AsRef<str>,
         accessibility_description: impl AsRef<str>,
-        app_state: Weak<RefCell<AppState>>,
+        app_state: AppStateRef,
     ) -> MenuItem;
 
-    fn caffinate_item(caffinating: bool, app_state: Weak<RefCell<AppState>>) -> MenuItem;
+    fn caffinate_item(caffinating: bool, app_state: AppStateRef) -> MenuItem;
 
     fn quit_item() -> MenuItem;
 }
@@ -20,7 +22,7 @@ impl Ext for MenuItem {
         title: impl AsRef<str>,
         image_named: impl AsRef<str>,
         accessibility_description: impl AsRef<str>,
-        app_state: Weak<RefCell<AppState>>,
+        app_state: AppStateRef,
     ) -> MenuItem {
         let mut menu_item = Self::new(
             title,
@@ -39,7 +41,7 @@ impl Ext for MenuItem {
         menu_item
     }
 
-    fn caffinate_item(caffinating: bool, app_state: Weak<RefCell<AppState>>) -> MenuItem {
+    fn caffinate_item(caffinating: bool, app_state: AppStateRef) -> MenuItem {
         let mut caffinate_item = Self::new(
             "Caffinate",
             Some(Box::new(move || {

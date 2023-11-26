@@ -1,6 +1,5 @@
 use super::menu_item::Ext;
-use std::cell::RefCell;
-use std::rc::{Rc, Weak};
+use std::{cell::RefCell, rc::Weak};
 use system_status_bar_macos::{Menu, MenuItem, StatusItem};
 
 #[derive(Debug)]
@@ -40,7 +39,7 @@ impl Mode {
 }
 
 pub struct AppState {
-    status_item: Rc<RefCell<StatusItem>>,
+    status_item: StatusItem,
     mode: Mode,
     weak_self: Weak<RefCell<Self>>,
     caffinating: bool,
@@ -56,7 +55,7 @@ impl AppState {
         );
 
         Self {
-            status_item: Rc::new(RefCell::new(status_item)),
+            status_item,
             mode,
             weak_self: Weak::new(),
             caffinating: false,
@@ -75,19 +74,16 @@ impl AppState {
     pub fn toggle_mode(&mut self) {
         let new_mode = self.mode.toggle();
         println!("Switching to {new_mode:#?} mode");
-        self.status_item
-            .try_borrow_mut()
-            .unwrap()
-            .set_image_with_system_symbol_name(
-                new_mode.sf_symbol(),
-                Some(new_mode.accessibility_description()),
-            );
+        self.status_item.set_image_with_system_symbol_name(
+            new_mode.sf_symbol(),
+            Some(new_mode.accessibility_description()),
+        );
         self.mode = new_mode;
 
         self.configure_menu_items();
     }
 
-    fn configure_menu_items(&self) {
+    fn configure_menu_items(&mut self) {
         let opposite_mode = self.mode.toggle();
         let menu_items = vec![
             MenuItem::toggle_mode(
@@ -100,10 +96,7 @@ impl AppState {
             MenuItem::separator(),
             MenuItem::quit_item(),
         ];
-        self.status_item
-            .try_borrow_mut()
-            .unwrap()
-            .set_menu(Menu::new(menu_items));
+        self.status_item.set_menu(Menu::new(menu_items));
     }
 
     #[must_use]

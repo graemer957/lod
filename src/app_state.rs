@@ -130,7 +130,7 @@ impl AppState {
         });
 
         if let Err(error) = ProgramImpl::new(defaults, 0).execute() {
-            eprintln!("{error}");
+            eprintln!("{error:?}");
         }
     }
 }

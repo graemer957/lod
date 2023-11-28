@@ -124,7 +124,7 @@ impl AppState {
 
     fn run_apple_script(&self) {
         let mut defaults = Command::new("osascript");
-        defaults.args(match self.mode {
+        defaults.arg(match self.mode {
             Mode::Laptop => self.config.laptop_applescript_path(),
             Mode::Desktop => self.config.desktop_applescript_path(),
         });

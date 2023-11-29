@@ -3,7 +3,7 @@ use super::{
     program::{Program, ProgramImpl},
     Config,
 };
-use std::{cell::RefCell, process::Command, rc::Weak};
+use std::{cell::RefCell, process::Command, rc::Weak, thread};
 use system_status_bar_macos::{Menu, MenuItem, StatusItem};
 
 #[derive(Debug)]
@@ -129,8 +129,10 @@ impl AppState {
             Mode::Desktop => self.config.desktop_applescript_path(),
         });
 
-        if let Err(error) = ProgramImpl::new(defaults, 0).execute() {
-            eprintln!("{error:?}");
-        }
+        thread::spawn(move || {
+            if let Err(error) = ProgramImpl::new(defaults, 0).execute() {
+                eprintln!("{error:?}");
+            }
+        });
     }
 }

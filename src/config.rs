@@ -6,6 +6,8 @@ pub struct Config {
     temp_dir: Option<TempDir>,
     desktop_applescript_path: PathBuf,
     laptop_applescript_path: PathBuf,
+    caffeinate_app: Option<String>,
+    caffeinate_options: Option<String>,
 }
 
 impl Config {
@@ -27,11 +29,21 @@ impl Config {
             Self::create_apple_script(&toml, &temp_dir, "desktop_applescript")?;
         let laptop_applescript_path =
             Self::create_apple_script(&toml, &temp_dir, "laptop_applescript")?;
+        let caffeinate_app = toml
+            .get("caffeinate_app")
+            .and_then(|x| x.as_str())
+            .map(String::from);
+        let caffeinate_options = toml
+            .get("caffeinate_options")
+            .and_then(|x| x.as_str())
+            .map(String::from);
 
         Ok(Self {
             temp_dir: Some(temp_dir),
             desktop_applescript_path,
             laptop_applescript_path,
+            caffeinate_app,
+            caffeinate_options,
         })
     }
 
@@ -64,5 +76,15 @@ impl Config {
     #[must_use]
     pub const fn laptop_applescript_path(&self) -> &PathBuf {
         &self.laptop_applescript_path
+    }
+
+    #[must_use]
+    pub fn caffeinate_app(&self) -> Option<&str> {
+        self.caffeinate_app.as_deref()
+    }
+
+    #[must_use]
+    pub fn caffeinate_options(&self) -> Option<&str> {
+        self.caffeinate_options.as_deref()
     }
 }

@@ -3,7 +3,7 @@ use super::{
     program::{Program, ProgramImpl},
     Config,
 };
-use std::{cell::RefCell, process::Command, rc::Weak, thread};
+use std::{cell::RefCell, process::Child, process::Command, rc::Weak, thread};
 use system_status_bar_macos::{Menu, MenuItem, StatusItem};
 
 #[derive(Debug)]
@@ -47,7 +47,7 @@ pub struct AppState {
     status_item: StatusItem,
     mode: Mode,
     weak_self: Weak<RefCell<Self>>,
-    caffeinating: bool,
+    caffeinate: Option<Child>,
 }
 
 impl AppState {
@@ -64,7 +64,7 @@ impl AppState {
             status_item,
             mode,
             weak_self: Weak::new(),
-            caffeinating: false,
+            caffeinate: None,
         }
     }
 
@@ -99,7 +99,7 @@ impl AppState {
                 opposite_mode.accessibility_description(),
                 self.weak_self.clone(),
             ),
-            MenuItem::caffeinate_item(self.caffeinating, self.weak_self.clone()),
+            MenuItem::caffeinate_item(self.caffeinate.is_some(), self.weak_self.clone()),
             MenuItem::separator(),
             MenuItem::quit_item(self.weak_self.clone()),
         ];
@@ -108,12 +108,35 @@ impl AppState {
 
     #[must_use]
     pub const fn caffeinating(&self) -> bool {
-        self.caffeinating
+        self.caffeinate.is_some()
     }
 
+    #[allow(clippy::nonminimal_bool)]
     pub fn toggle_caffeination(&mut self) {
-        self.caffeinating = !self.caffeinating;
-        println!("Switching caffeination to {}", self.caffeinating);
+        // We want to show the state we are going to, thus the negation
+        // and need for the clippy allow
+        println!("Switching caffeination to {}", !self.caffeinate.is_some());
+
+        match &mut self.caffeinate {
+            Some(child) => {
+                if let Err(error) = child.kill() {
+                    dbg!(error);
+                };
+            }
+            None => {
+                let caffeinate_app = self.config.caffeinate_app().unwrap_or("caffeinate");
+                let mut caffeinate = Command::new(caffeinate_app);
+                if let Some(arg) = self.config.caffeinate_options() {
+                    caffeinate.arg(arg);
+                }
+                match caffeinate.spawn() {
+                    Ok(child) => self.caffeinate = Some(child),
+                    Err(error) => {
+                        dbg!(error);
+                    }
+                };
+            }
+        };
 
         self.configure_menu_items();
     }

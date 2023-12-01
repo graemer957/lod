@@ -1,0 +1,6 @@
+desktop_applescript="""
+tell app "System Events" to display dialog "Welcome to Desktop Mode!\n\nThis is the default AppleScript. Please edit your `~/.config/lod/config.toml` to customise with your own desired actions." buttons {"OK"} with icon caution
+"""
+laptop_applescript="""
+tell app "System Events" to display dialog "Welcome to Laptop Mode!\n\nThis is the default AppleScript. Please edit your `~/.config/lod/config.toml` to customise with your own desired actions." buttons {"OK"} with icon caution
+"""

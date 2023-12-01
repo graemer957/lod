@@ -117,12 +117,8 @@ impl AppState {
         // and need for the clippy allow
         println!("Switching caffeination to {}", !self.caffeinate.is_some());
 
-        match &mut self.caffeinate {
-            Some(child) => {
-                if let Err(error) = child.kill() {
-                    dbg!(error);
-                };
-            }
+        match &self.caffeinate {
+            Some(_) => self.kill_caffeinate(),
             None => {
                 let caffeinate_app = self.config.caffeinate_app().unwrap_or("caffeinate");
                 let mut caffeinate = Command::new(caffeinate_app);
@@ -157,5 +153,13 @@ impl AppState {
                 eprintln!("{error:?}");
             }
         });
+    }
+
+    pub(super) fn kill_caffeinate(&mut self) {
+        if let Some(mut child) = self.caffeinate.take() {
+            if let Err(error) = child.kill() {
+                dbg!(error);
+            };
+        }
     }
 }

@@ -75,6 +75,8 @@ impl Ext for MenuItem {
                     .borrow_mut()
                     .delete_apple_scripts();
 
+                app_state.upgrade().unwrap().borrow_mut().kill_caffeinate();
+
                 process::exit(0);
             })),
             None,

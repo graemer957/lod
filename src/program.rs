@@ -248,7 +248,7 @@ mod test {
             .returning(|| Err(io::Error::other("intentional error")));
 
         let sut = ProgramImpl::new(mock, 0).execute();
-        assert!(matches!(sut, Err(Error::Io(error)) if error.kind() == io::ErrorKind::Other));
+        assert!(matches!(sut, Err(Error::Io(error)) if error.kind() == ErrorKind::Other));
     }
 
     #[test]

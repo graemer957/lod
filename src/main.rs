@@ -8,8 +8,10 @@ use icrate::AppKit::NSApplication;
 use lod::{AppState, Config, Mode};
 use std::{cell::RefCell, error::Error, rc::Rc};
 
+#[cfg(target_os = "macos")]
 struct Application;
 
+#[cfg(target_os = "macos")]
 impl Application {
     fn run() {
         unsafe {

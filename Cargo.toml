@@ -14,5 +14,8 @@ toml = "0.8.8"
 mockall = "0.11.4"
 
 [target.'cfg(target_os = "macos")'.dependencies]
-icrate = { version = "0.0.4", features = ["apple", "Foundation_all", "AppKit_all"] }
+icrate = { version = "0.0.4", features = ["apple", "AppKit_NSApplication"] }
+system_status_bar_macos = "0.2.0"
+
+[patch.crates-io]
 system_status_bar_macos = { git = "https://github.com/graemer957/system_status_bar_macos.git", branch = "task/extend_api" }

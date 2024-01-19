@@ -1,6 +1,6 @@
 use super::AppState;
 use std::{cell::RefCell, process, rc::Weak};
-use system_status_bar_macos::{MenuItem, MenuItemState};
+use system_status_bar_macos::{ControlState, Image, MenuItem};
 
 type AppStateRef = Weak<RefCell<AppState>>;
 
@@ -36,7 +36,11 @@ impl Ext for MenuItem {
             })),
             None,
         );
-        menu_item.set_image_with_system_symbol_name(image_named, Some(accessibility_description));
+        if let Some(image) =
+            Image::with_system_symbol_name(image_named, Some(accessibility_description))
+        {
+            menu_item.set_image(image);
+        }
 
         menu_item
     }
@@ -54,12 +58,16 @@ impl Ext for MenuItem {
             })),
             None,
         );
-        caffeinate_item
-            .set_image_with_system_symbol_name("mug.fill", Some("Toggle caffeination of your Mac"));
+
+        if let Some(image) =
+            Image::with_system_symbol_name("mug.fill", Some("Toggle caffeination of your Mac"))
+        {
+            caffeinate_item.set_image(image);
+        }
         if caffeinating {
-            caffeinate_item.set_state(MenuItemState::On);
+            caffeinate_item.set_control_state(ControlState::On);
         } else {
-            caffeinate_item.set_state(MenuItemState::Off);
+            caffeinate_item.set_control_state(ControlState::Off);
         }
 
         caffeinate_item

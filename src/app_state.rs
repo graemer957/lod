@@ -4,7 +4,7 @@ use super::{
     Config,
 };
 use std::{cell::RefCell, process::Child, process::Command, rc::Weak, thread};
-use system_status_bar_macos::{Menu, MenuItem, StatusItem};
+use system_status_bar_macos::{Image, Menu, MenuItem, StatusItem};
 
 #[derive(Debug)]
 pub enum Mode {
@@ -54,10 +54,11 @@ impl AppState {
     #[must_use]
     pub fn new(config: Config, mode: Mode) -> Self {
         let mut status_item = StatusItem::new("", Menu::new(vec![]));
-        status_item.set_image_with_system_symbol_name(
-            mode.sf_symbol(),
-            Some(mode.accessibility_description()),
-        );
+        if let Some(image) =
+            Image::with_system_symbol_name(mode.sf_symbol(), Some(mode.accessibility_description()))
+        {
+            status_item.set_image(image);
+        }
 
         Self {
             config,
@@ -80,10 +81,12 @@ impl AppState {
     pub fn toggle_mode(&mut self) {
         let new_mode = self.mode.toggle();
         println!("Switching to {new_mode:#?} mode");
-        self.status_item.set_image_with_system_symbol_name(
+        if let Some(image) = Image::with_system_symbol_name(
             new_mode.sf_symbol(),
             Some(new_mode.accessibility_description()),
-        );
+        ) {
+            self.status_item.set_image(image);
+        }
         self.mode = new_mode;
 
         self.run_apple_script();

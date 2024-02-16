@@ -6,7 +6,7 @@ unit:
 	cargo test
 
 coverage:
-	@./ccov.sh
+	@./ccov.sh apoc
 
 test: unit coverage
 

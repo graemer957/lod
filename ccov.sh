@@ -7,7 +7,7 @@ if [ -z "${SERVER}" ]; then
 	exit 1;
 fi
 
-DEST_DIR="~/code/$(basename "$PWD")"
+DEST_DIR="~/dev/$(basename "$PWD")"
 
 # Remember to use '' to stop local shell expansion
 rsync -a --force --del --delete --delete-excluded -e ssh --exclude='*/.git' --exclude='target' . $SERVER:"$DEST_DIR"
@@ -18,4 +18,4 @@ ssh -t $SERVER ". .cargo/env && cd $DEST_DIR && cargo tarpaulin -o Html"
 # Copy back the report for inspection locally
 scp -q $SERVER:"$DEST_DIR"/tarpaulin-report.html .
 
-# Last updated: 20231202
+# Last updated: 20240216

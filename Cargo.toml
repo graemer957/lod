@@ -18,4 +18,4 @@ icrate = { version = "0.0.4", features = ["apple", "AppKit_NSApplication"] }
 system_status_bar_macos = "0.2.0"
 
 [patch.crates-io]
-system_status_bar_macos = { git = "https://github.com/graemer957/system_status_bar_macos.git", branch = "task/extend_api" }
+system_status_bar_macos = { git = "https://github.com/graemer957/system_status_bar_macos.git", branch = "task/rustfmt" }

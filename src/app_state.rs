@@ -162,6 +162,10 @@ impl AppState {
         if let Some(mut child) = self.caffeinate.take() {
             if let Err(error) = child.kill() {
                 dbg!(error);
+            } else {
+                // We need to `wait` on the child process, otherwise it hangs around on macOS as a
+                // zombie. See https://doc.rust-lang.org/std/process/struct.Child.html#warning
+                let _ = child.wait();
             };
         }
     }

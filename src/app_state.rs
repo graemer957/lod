@@ -4,7 +4,7 @@ use super::{
     waiting_child::WaitingChild,
     Config,
 };
-use std::{cell::RefCell, process::Command, rc::Weak, sync::mpsc::Sender, thread};
+use std::{process::Command, sync::mpsc::Sender, thread};
 use system_status_bar_macos::{Image, Menu, MenuItem, StatusItem};
 
 #[derive(Debug)]
@@ -47,7 +47,6 @@ pub struct AppState {
     config: Config,
     status_item: StatusItem,
     mode: Mode,
-    weak_self: Weak<RefCell<Self>>,
     caffeinate: Option<WaitingChild>,
     sender: Sender<StateChangeMessage>,
 }
@@ -62,25 +61,17 @@ impl AppState {
             status_item.set_image(image);
         }
 
-        Self {
+        let mut app_state = Self {
             config,
             status_item,
             mode,
-            weak_self: Weak::new(),
             caffeinate: None,
             sender,
-        }
+        };
+        app_state.configure_menu_items();
+        app_state
     }
 
-    pub fn set_weak_self(&mut self, weak_self: Weak<RefCell<Self>>) {
-        self.weak_self = weak_self;
-
-        self.configure_menu_items();
-    }
-
-    /// # Panics
-    ///
-    /// If unable to `borrow_mut` on self(!)
     pub fn toggle_mode(&mut self) {
         let new_mode = self.mode.toggle();
         println!("Switching to {new_mode:#?} mode");

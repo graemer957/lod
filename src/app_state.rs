@@ -3,7 +3,7 @@ use super::{
     program::{Program, ProgramImpl},
     Config,
 };
-use std::{cell::RefCell, process::Child, process::Command, rc::Weak, thread};
+use std::{cell::RefCell, process::Command, rc::Weak, sync::mpsc::Sender, thread};
 use system_status_bar_macos::{Image, Menu, MenuItem, StatusItem};
 
 #[derive(Debug)]
@@ -48,11 +48,12 @@ pub struct AppState {
     mode: Mode,
     weak_self: Weak<RefCell<Self>>,
     caffeinate: Option<Child>,
+    sender: Sender<StateChangeMessage>,
 }
 
 impl AppState {
     #[must_use]
-    pub fn new(config: Config, mode: Mode) -> Self {
+    pub fn new(config: Config, mode: Mode, sender: Sender<StateChangeMessage>) -> Self {
         let mut status_item = StatusItem::new("", Menu::new(vec![]));
         if let Some(image) =
             Image::with_system_symbol_name(mode.sf_symbol(), Some(mode.accessibility_description()))
@@ -66,6 +67,7 @@ impl AppState {
             mode,
             weak_self: Weak::new(),
             caffeinate: None,
+            sender,
         }
     }
 
@@ -100,11 +102,11 @@ impl AppState {
                 opposite_mode.description(),
                 opposite_mode.sf_symbol(),
                 opposite_mode.accessibility_description(),
-                self.weak_self.clone(),
+                self.sender.clone(),
             ),
-            MenuItem::caffeinate_item(self.caffeinate.is_some(), self.weak_self.clone()),
+            MenuItem::caffeinate_item(self.caffeinate.is_some(), self.sender.clone()),
             MenuItem::separator(),
-            MenuItem::quit_item(self.weak_self.clone()),
+            MenuItem::quit_item(self.sender.clone()),
         ];
         self.status_item.set_menu(Menu::new(menu_items));
     }
@@ -140,10 +142,6 @@ impl AppState {
         self.configure_menu_items();
     }
 
-    pub fn delete_apple_scripts(&mut self) {
-        self.config.delete_apple_scripts();
-    }
-
     fn run_apple_script(&self) {
         let mut defaults = Command::new("osascript");
         defaults.arg(match self.mode {
@@ -158,8 +156,8 @@ impl AppState {
         });
     }
 
-    pub(super) fn kill_caffeinate(&mut self) {
-        if let Some(mut child) = self.caffeinate.take() {
+    fn kill_caffeinate(&mut self) {
+        if let Some(child) = self.caffeinate.take() {
             if let Err(error) = child.kill() {
                 dbg!(error);
             } else {
@@ -169,4 +167,30 @@ impl AppState {
             };
         }
     }
+}
+
+impl Drop for AppState {
+    fn drop(&mut self) {
+        println!("Deleting AppleScripts in AppState::drop()");
+        self.config.delete_apple_scripts();
+
+        println!("Killing caffeinate");
+        self.kill_caffeinate();
+    }
+}
+
+/// Message sent to change the app's state
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum StateChangeMessage {
+    /// Toggle the current mode
+    ToggleMode,
+
+    /// Toggle caffeination
+    ToggleCaffeination,
+
+    /// Clear the caffeination checkmark
+    ClearCaffeination,
+
+    /// Quit the app
+    Quit,
 }

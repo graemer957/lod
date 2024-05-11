@@ -5,7 +5,7 @@
 #[cfg(target_os = "macos")]
 mod app_state;
 #[cfg(target_os = "macos")]
-pub use app_state::{AppState, Mode};
+pub use app_state::{AppState, Mode, StateChangeMessage};
 mod config;
 pub use config::Config;
 mod application;

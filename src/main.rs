@@ -28,19 +28,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         .unwrap()
         .set_weak_self(Rc::downgrade(&app_state));
 
-    Application::run(&receiver, move |message| {
-        dbg!(&message);
-        match message {
-            StateChangeMessage::Quit => (),
-            StateChangeMessage::ClearCaffeination => {
-                println!("would kill caffeinate, but not ready yet™");
-            }
-            StateChangeMessage::ToggleMode => {
-                app_state.try_borrow_mut().unwrap().toggle_mode();
-            }
-            StateChangeMessage::ToggleCaffeination => {
-                app_state.try_borrow_mut().unwrap().toggle_caffeination();
-            }
+    Application::run(&receiver, move |message| match message {
+        StateChangeMessage::Quit => (),
+        StateChangeMessage::ClearCaffeination => {
+            app_state.try_borrow_mut().unwrap().clear_caffeinate();
+        }
+        StateChangeMessage::ToggleMode => {
+            app_state.try_borrow_mut().unwrap().toggle_mode();
+        }
+        StateChangeMessage::ToggleCaffeination => {
+            app_state.try_borrow_mut().unwrap().toggle_caffeination();
         }
     });
 

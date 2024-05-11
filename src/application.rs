@@ -17,7 +17,10 @@ unsafe impl Send for AutoReleasePoolContext {}
 pub struct Application;
 
 impl Application {
-    pub fn run(receiver: &Receiver<StateChangeMessage>, callback: impl Fn(StateChangeMessage)) {
+    pub fn run(
+        receiver: &Receiver<StateChangeMessage>,
+        mut callback: impl FnMut(StateChangeMessage),
+    ) {
         // This code is mostly copy/pasted from system_status_bar_macos,
         // see https://github.com/amachang/system_status_bar_macos/blob/1add60da873f9ac8e22be211ef84d72513d9459a/src/lib.rs#L581
         //

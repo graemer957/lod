@@ -1,6 +1,7 @@
 use super::{
     menu_item::Ext,
     program::{Program, ProgramImpl},
+    waiting_child::WaitingChild,
     Config,
 };
 use std::{cell::RefCell, process::Command, rc::Weak, sync::mpsc::Sender, thread};
@@ -47,7 +48,7 @@ pub struct AppState {
     status_item: StatusItem,
     mode: Mode,
     weak_self: Weak<RefCell<Self>>,
-    caffeinate: Option<Child>,
+    caffeinate: Option<WaitingChild>,
     sender: Sender<StateChangeMessage>,
 }
 
@@ -131,7 +132,10 @@ impl AppState {
                     caffeinate.arg(arg);
                 }
                 match caffeinate.spawn() {
-                    Ok(child) => self.caffeinate = Some(child),
+                    Ok(child) => {
+                        let waiting_child = WaitingChild::new(child, self.sender.clone());
+                        self.caffeinate = Some(waiting_child);
+                    }
                     Err(error) => {
                         dbg!(error);
                     }
@@ -160,12 +164,17 @@ impl AppState {
         if let Some(child) = self.caffeinate.take() {
             if let Err(error) = child.kill() {
                 dbg!(error);
-            } else {
-                // We need to `wait` on the child process, otherwise it hangs around on macOS as a
-                // zombie. See https://doc.rust-lang.org/std/process/struct.Child.html#warning
-                let _ = child.wait();
-            };
+            }
         }
+    }
+
+    pub fn clear_caffeinate(&mut self) {
+        println!(
+            "Caffeinate has been killed, updating menu state. NOTE: This message could be delayed \
+            from when the process was actually killed as waited until next event loop invocation."
+        );
+        self.caffeinate.take();
+        self.configure_menu_items();
     }
 }
 

@@ -13,6 +13,7 @@ pub use application::Application;
 #[cfg(target_os = "macos")]
 mod menu_item;
 pub mod program;
+mod waiting_child;
 
 use program::{Program, ProgramImpl};
 use std::error::Error;

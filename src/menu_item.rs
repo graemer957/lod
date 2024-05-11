@@ -1,20 +1,18 @@
-use super::AppState;
-use std::{cell::RefCell, process, rc::Weak};
+use super::app_state::StateChangeMessage;
+use std::sync::mpsc::Sender;
 use system_status_bar_macos::{ControlState, Image, MenuItem};
-
-type AppStateRef = Weak<RefCell<AppState>>;
 
 pub trait Ext {
     fn toggle_mode(
         title: impl AsRef<str>,
         image: impl AsRef<str>,
         accessibility_description: impl AsRef<str>,
-        app_state: AppStateRef,
+        sender: Sender<StateChangeMessage>,
     ) -> MenuItem;
 
-    fn caffeinate_item(caffeinating: bool, app_state: AppStateRef) -> MenuItem;
+    fn caffeinate_item(caffeinating: bool, sender: Sender<StateChangeMessage>) -> MenuItem;
 
-    fn quit_item(app_state: AppStateRef) -> MenuItem;
+    fn quit_item(sender: Sender<StateChangeMessage>) -> MenuItem;
 }
 
 impl Ext for MenuItem {
@@ -22,17 +20,16 @@ impl Ext for MenuItem {
         title: impl AsRef<str>,
         image_named: impl AsRef<str>,
         accessibility_description: impl AsRef<str>,
-        app_state: AppStateRef,
+        sender: Sender<StateChangeMessage>,
     ) -> MenuItem {
         let mut menu_item = Self::new(
             title,
             Some(Box::new(move || {
-                app_state
-                    .upgrade()
-                    .unwrap()
-                    .try_borrow_mut()
-                    .unwrap()
-                    .toggle_mode();
+                if let Err(error) = sender.send(StateChangeMessage::ToggleMode) {
+                    eprintln!(
+                        "Failed to send StateChangeMessage::ToggleMode message. Error: {error}"
+                    );
+                }
             })),
             None,
         );
@@ -45,16 +42,13 @@ impl Ext for MenuItem {
         menu_item
     }
 
-    fn caffeinate_item(caffeinating: bool, app_state: AppStateRef) -> MenuItem {
+    fn caffeinate_item(caffeinating: bool, sender: Sender<StateChangeMessage>) -> MenuItem {
         let mut caffeinate_item = Self::new(
             "Caffeinate",
             Some(Box::new(move || {
-                app_state
-                    .upgrade()
-                    .unwrap()
-                    .try_borrow_mut()
-                    .unwrap()
-                    .toggle_caffeination();
+                if let Err(error) = sender.send(StateChangeMessage::ToggleCaffeination) {
+                    eprintln!("Failed to send StateChangeMessage::ToggleCaffeination message. Error: {error}");
+                }
             })),
             None,
         );
@@ -73,19 +67,13 @@ impl Ext for MenuItem {
         caffeinate_item
     }
 
-    fn quit_item(app_state: AppStateRef) -> MenuItem {
+    fn quit_item(sender: Sender<StateChangeMessage>) -> MenuItem {
         Self::new(
             "Quit",
             Some(Box::new(move || {
-                app_state
-                    .upgrade()
-                    .unwrap()
-                    .borrow_mut()
-                    .delete_apple_scripts();
-
-                app_state.upgrade().unwrap().borrow_mut().kill_caffeinate();
-
-                process::exit(0);
+                if let Err(error) = sender.send(StateChangeMessage::Quit) {
+                    eprintln!("Failed to send StateChangeMessage::Quit message. Error: {error}");
+                }
             })),
             None,
         )

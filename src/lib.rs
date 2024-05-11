@@ -8,6 +8,8 @@ mod app_state;
 pub use app_state::{AppState, Mode};
 mod config;
 pub use config::Config;
+mod application;
+pub use application::Application;
 #[cfg(target_os = "macos")]
 mod menu_item;
 pub mod program;

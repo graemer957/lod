@@ -3,22 +3,8 @@
 #![warn(clippy::nursery)]
 
 #[cfg(target_os = "macos")]
-use icrate::AppKit::NSApplication;
-#[cfg(target_os = "macos")]
-use lod::{AppState, Config, Mode};
+use lod::{AppState, Application, Config, Mode};
 use std::{cell::RefCell, error::Error, rc::Rc};
-
-#[cfg(target_os = "macos")]
-struct Application;
-
-#[cfg(target_os = "macos")]
-impl Application {
-    fn run() {
-        unsafe {
-            NSApplication::sharedApplication().run();
-        }
-    }
-}
 
 #[cfg(target_os = "macos")]
 fn main() -> Result<(), Box<dyn Error>> {

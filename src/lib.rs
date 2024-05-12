@@ -8,11 +8,14 @@ mod app_state;
 pub use app_state::{AppState, Mode, StateChangeMessage};
 mod config;
 pub use config::Config;
+#[cfg(target_os = "macos")]
 mod application;
+#[cfg(target_os = "macos")]
 pub use application::Application;
 #[cfg(target_os = "macos")]
 mod menu_item;
 pub mod program;
+#[cfg(target_os = "macos")]
 mod waiting_child;
 
 use program::{Program, ProgramImpl};

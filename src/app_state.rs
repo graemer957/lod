@@ -1,8 +1,8 @@
 use super::{
+    Config,
     menu_item::Ext,
     program::{Program, ProgramImpl},
     waiting_child::WaitingChild,
-    Config,
 };
 use std::{process::Command, sync::mpsc::Sender, thread};
 use system_status_bar_macos::{Image, Menu, MenuItem, StatusItem};

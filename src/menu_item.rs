@@ -47,7 +47,9 @@ impl Ext for MenuItem {
             "Caffeinate",
             Some(Box::new(move || {
                 if let Err(error) = sender.send(StateChangeMessage::ToggleCaffeination) {
-                    eprintln!("Failed to send StateChangeMessage::ToggleCaffeination message. Error: {error}");
+                    eprintln!(
+                        "Failed to send StateChangeMessage::ToggleCaffeination message. Error: {error}"
+                    );
                 }
             })),
             None,

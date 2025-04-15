@@ -1,12 +1,12 @@
 use std::{ffi::c_void, sync::mpsc::Receiver};
 
 use icrate::{
+    AppKit::{NSApplication, NSEvent, NSEventMaskAny},
+    Foundation::{NSDate, NSString},
     objc2::{
         ffi::{objc_autoreleasePoolPop, objc_autoreleasePoolPush},
         rc::Id,
     },
-    AppKit::{NSApplication, NSEvent, NSEventMaskAny},
-    Foundation::{NSDate, NSString},
 };
 
 use crate::app_state::StateChangeMessage;

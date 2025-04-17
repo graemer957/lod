@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         rust: [stable, beta, nightly]
-    fast-fail: true
+    fail-fast: true
 
     steps:
       - name: Checkout code

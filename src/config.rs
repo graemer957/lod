@@ -89,14 +89,16 @@ impl Config {
     ) -> Result<PathBuf, Box<dyn Error>> {
         let applescript = toml
             .get(key)
-            .ok_or(format!(
-                "`{key}` is missing from config.toml. Please add, or revert to defaults."
-            ))?
+            .ok_or_else(|| {
+                format!("`{key}` is missing from config.toml. Please add, or revert to defaults.")
+            })?
             .as_str()
-            .ok_or(format!(
-                "`{key}` is malformed in config.toml. Please ensure it is valid \
+            .ok_or_else(|| {
+                format!(
+                    "`{key}` is malformed in config.toml. Please ensure it is valid \
                 AppleScript as a TOML string (see https://quickref.me/toml)."
-            ))?;
+                )
+            })?;
         let path = temp_dir.path().join(format!("{key}.scpt"));
         let mut temp_file = File::create(&path)?;
         write!(temp_file, "{applescript}")?;

@@ -38,4 +38,4 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 #[cfg(target_os = "linux")]
-fn main() {}
+const fn main() {}

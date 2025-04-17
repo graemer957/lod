@@ -47,7 +47,7 @@ impl Application {
                     );
                 if let Some(event) = event {
                     app.sendEvent(&event);
-                };
+                }
                 app.updateWindows();
 
                 while let Ok(message) = receiver.try_recv() {

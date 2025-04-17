@@ -114,25 +114,24 @@ impl AppState {
         // and need for the clippy allow
         println!("Switching caffeination to {}", !self.caffeinate.is_some());
 
-        match &self.caffeinate {
-            Some(_) => self.kill_caffeinate(),
-            None => {
-                let caffeinate_app = self.config.caffeinate_app().unwrap_or("caffeinate");
-                let mut caffeinate = Command::new(caffeinate_app);
-                if let Some(arg) = self.config.caffeinate_options() {
-                    caffeinate.arg(arg);
-                }
-                match caffeinate.spawn() {
-                    Ok(child) => {
-                        let waiting_child = WaitingChild::new(child, self.sender.clone());
-                        self.caffeinate = Some(waiting_child);
-                    }
-                    Err(error) => {
-                        dbg!(error);
-                    }
-                };
+        if self.caffeinate.is_some() {
+            self.kill_caffeinate();
+        } else {
+            let caffeinate_app = self.config.caffeinate_app().unwrap_or("caffeinate");
+            let mut caffeinate = Command::new(caffeinate_app);
+            if let Some(arg) = self.config.caffeinate_options() {
+                caffeinate.arg(arg);
             }
-        };
+            match caffeinate.spawn() {
+                Ok(child) => {
+                    let waiting_child = WaitingChild::new(child, self.sender.clone());
+                    self.caffeinate = Some(waiting_child);
+                }
+                Err(error) => {
+                    dbg!(error);
+                }
+            }
+        }
 
         self.configure_menu_items();
     }

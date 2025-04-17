@@ -4,6 +4,7 @@
 
 #[cfg(target_os = "macos")]
 use lod::{AppState, Application, Config, Mode, StateChangeMessage};
+#[cfg(target_os = "macos")]
 use std::{error::Error, sync::mpsc};
 
 #[cfg(target_os = "macos")]

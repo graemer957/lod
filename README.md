@@ -6,7 +6,7 @@ This is a small utility app for macOS that lives in the menu bar in the status a
 
 For example, when in desktop mode I prefer my mouse not to use natural scrolling (what can I say I've been using it this way since dot) and for the dock to be shown. However, in laptop mode, I prefer natural scrolling and having my dock hidden.
 
-I also use this for keeping my machine awake using the `caffinate` builtin utility.
+I also use this for keeping my machine awake using the `caffinate` built-in utility.
 
 ## How
 
@@ -51,5 +51,5 @@ An incomplete list of ideas which could make this project more useful. I may get
 - [ ] Observability, eg crash reporting and maybe anonymous usage information
 - [ ] Add tooltips or colour to the menu item(s) (this depends on enhancing [system_status_bar_macos](https://github.com/amachang/system_status_bar_macos)
 and so far the author has not merged any of my other PRs
-- [ ] Triggers based on hotkeys or hardware events (insertion of mouse triggers desktop mode)
+- [ ] Triggers based on hot keys or hardware events (insertion of mouse triggers desktop mode)
 - [ ] Automatically `caffinate` depending on power state

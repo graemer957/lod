@@ -16,6 +16,20 @@ Sadly, in the Apple ecosystem, it seems pretty difficult to change system settin
 
 A personal experiment in writing a GUI app in Rust. I do not anticipate it will be useful to many. I fully hope there are easier ways to perform this kind of automation because working with AppleScript is not exactly fun. Feel free to get in touch and let me know those easier ways ;-)
 
+### Learning
+
+- Writing a macOS app in Rust, was not 'pleasant' given the heritage (Objective-C)
+- [system_status_bar_macos](https://github.com/amachang/system_status_bar_macos) seemed like a good fit, but needed to extend it. Raised a few PRs:
+    - [[1/2] Extend `StatusItem` and `MenuItem` API](https://github.com/amachang/system_status_bar_macos/pull/1)
+    - [[2/2] Run rustfmt over the whole project](https://github.com/amachang/system_status_bar_macos/pull/2)
+- Initially, the crate author seemed willing to incorporate, but they are left unmerged as of 27/04/2025 😔
+- Forked [graemer957/system_status_bar_macos](https://github.com/graemer957/system_status_bar_macos)
+    - Extended `StatusItem` and `MenuItem`
+    - Formatted using `rustfmt`
+    - Substantially reduced build times (need to write up a blog post on this!)
+    - Modified the `event_loop!` so it does not waste CPU cycles
+- The AppleScripts I wrote ended up being flakey across macOS version upgrades
+
 ## Installing
 
 Simply use cargo install along with the path to this repo using the protocol you prefer, eg:

@@ -35,7 +35,7 @@ A personal experiment in writing a GUI app in Rust. I do not anticipate it will 
 Simply use cargo install along with the path to this repo using the protocol you prefer, eg:
 
 ```fish
-cargo install --git ssh://git@github.com/graemer957/lod
+cargo install --git ssh://git@github.com/graemer957/lod --locked
 ```
 
 ## Updating

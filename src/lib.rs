@@ -51,6 +51,6 @@ pub fn dock_autohide() -> Result<bool, Box<dyn Error>> {
         b'1' => Ok(true),
         // Could have chosen to return `false` here, but would like to understand
         // a little more how this could happen during development
-        _ => panic! {"Unexpected digit: {digit}"},
+        _ => Err(format!("Unexpected digit: {}", *digit as char).into()),
     }
 }

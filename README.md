@@ -14,7 +14,7 @@ Sadly, in the Apple ecosystem, it seems pretty difficult to change system settin
 
 ## Why
 
-A personal experiment in writing a GUI app in Rust. I do not anticipate it will be useful to many. I fully hope there are easier ways to perform this kind of automation because working with AppleScript is not exactly fun. Feel free to get in touch and let me know those easier ways ;-)
+A personal experiment in writing a GUI app in Rust. I do not anticipate it will be useful to many. **This is intentionally a lightweight utility focused on learning rather than production robustness.** I fully hope there are easier ways to perform this kind of automation because working with AppleScript is not exactly fun. Feel free to get in touch and let me know those easier ways ;-)
 
 ### Learning
 
@@ -49,11 +49,13 @@ Once installed, execute `lod` on the command line. I have some ideas on how to m
 ## Configuring
 
 In `~/.config/lod/config.toml` you can set:
-```yml
-desktop_applescript: <AppleScript to run when switching into Desktop mode>
-desktop_applescript: <AppleScript to run when switching into Laptop mode>
-caffeinate_app: Optional<Path to custom binary for keeping machine wake>
-caffeinate_options: Optional<Options to pass to custom binary>
+```toml
+desktop_applescript = "<AppleScript to run when switching into Desktop mode>"
+laptop_applescript = "<AppleScript to run when switching into Laptop mode>"
+
+# Optional
+# caffeinate_app = "<Path to custom binary for keeping machine wake>"
+# caffeinate_options = "<Options to pass to custom binary>"
 ```
 
 ## Future ideas
@@ -67,3 +69,4 @@ An incomplete list of ideas which could make this project more useful. I may get
 and so far the author has not merged any of my other PRs
 - [ ] Triggers based on hotkeys or hardware events (insertion of mouse triggers desktop mode)
 - [ ] Automatically `caffeinate` depending on power state
+- [ ] Improve automated test coverage

@@ -58,7 +58,6 @@ impl Config {
         let toml = toml.parse::<Table>()?;
 
         let temp_dir = tempfile::tempdir()?;
-        dbg!(&temp_dir.path());
 
         let desktop_applescript_path =
             Self::create_apple_script(&toml, &temp_dir, "desktop_applescript")?;

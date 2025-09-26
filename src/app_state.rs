@@ -128,7 +128,7 @@ impl AppState {
                     self.caffeinate = Some(waiting_child);
                 }
                 Err(error) => {
-                    dbg!(error);
+                    eprintln!("Failed to start caffeinate: {error:?}");
                 }
             }
         }
@@ -153,7 +153,7 @@ impl AppState {
     fn kill_caffeinate(&mut self) {
         if let Some(child) = self.caffeinate.take() {
             if let Err(error) = child.kill() {
-                dbg!(error);
+                eprintln!("Failed to kill caffeinate: {error:?}");
             }
         }
     }

@@ -38,6 +38,7 @@ pub fn dock_autohide() -> Result<bool, Box<dyn Error>> {
     defaults.args(["read", "com.apple.dock", "autohide"]);
     let output = ProgramImpl::new(defaults, 0).execute()?;
 
+    // `defaults` should return "0\n" or "1\n" (exactly 2 bytes) on macOS
     if output.stdout().len() != 2 {
         return Err("Got more chars from output than expected".into());
     }
@@ -46,6 +47,7 @@ pub fn dock_autohide() -> Result<bool, Box<dyn Error>> {
         .first()
         .ok_or("Could not get first byte of output")?;
 
+    // Use byte comparison to avoid allocation for this simple case
     match *digit {
         b'0' => Ok(false),
         b'1' => Ok(true),

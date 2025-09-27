@@ -58,6 +58,17 @@ laptop_applescript = "<AppleScript to run when switching into Laptop mode>"
 # caffeinate_options = "<Options to pass to custom binary>"
 ```
 
+## Development
+
+You will need Rust 1.86.0 or higher.
+
+```bash
+cargo test
+cargo build --release
+```
+
+For coverage reports and code stats, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Future ideas
 
 An incomplete list of ideas which could make this project more useful. I may get to them one day, but feel free to raise a PR if any are handy for you sooner :-)

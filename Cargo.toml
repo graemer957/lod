@@ -14,8 +14,10 @@ toml = "0.9.0"
 mockall = "0.13.0"
 
 [target.'cfg(target_os = "macos")'.dependencies]
-icrate = { version = "0.0.4", features = ["apple", "AppKit_NSApplication"] }
-system_status_bar_macos = "0.2.0"
+objc2 = "0.6"
+objc2-app-kit = { version = "0.3", features = ["NSApplication", "NSEvent", "NSResponder"] }
+objc2-foundation = { version = "0.3", features = ["NSDate", "NSString"] }
+system_status_bar_macos = "0.2"
 
 [patch.crates-io]
 system_status_bar_macos = { git = "https://github.com/graemer957/system_status_bar_macos.git", branch = "task/rustfmt" }

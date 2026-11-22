@@ -1,17 +1,37 @@
 name: Security audit
+
 on:
-  push:
-    paths: 
+  pull_request:
+    paths:
       - '**/Cargo.toml'
       - '**/Cargo.lock'
+      - '.github/workflows/cargo_audit.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '.github/workflows/cargo_audit.yml'
   schedule:
     - cron: '17 3 * * 5'
 
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
-  security_audit:
+  cargo_audit:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v7
-      - uses: rustsec/audit-check@v2.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
+      - uses: taiki-e/install-action@fe3acb53a98b62c772db35de75ce0e4595e7ca8c # v2.90.8
+        with:
+          tool: cargo-audit
+      - run: cargo audit --deny warnings

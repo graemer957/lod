@@ -2,5 +2,24 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "minimumReleaseAge": "7 days",
+  "platformAutomerge": false,
+  "packageRules": [
+    {
+      "description": "Automerge non-major updates once CI passes",
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "automerge": true
+    },
+    {
+      "description": "CI runs on Linux, so it never compiles macOS-only crates",
+      "matchPackageNames": [
+        "objc2",
+        "objc2-app-kit",
+        "objc2-foundation",
+        "system_status_bar_macos"
+      ],
+      "automerge": false
+    }
   ]
 }
